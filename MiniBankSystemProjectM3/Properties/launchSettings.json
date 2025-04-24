@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MiniBankSystemProjectM3": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
