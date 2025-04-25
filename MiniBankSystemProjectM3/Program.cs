@@ -672,7 +672,8 @@ namespace MiniBankSystemProject
                 Console.WriteLine("5- Search by National ID");
                 Console.WriteLine("6- Delete Account");
                 Console.WriteLine("7- Transfer Funds");
-                Console.WriteLine("8- View Top 3 Richest Customers");  
+                Console.WriteLine("8- View Top 3 Richest Customers");
+                Console.WriteLine("9- View Total Bank Balance");
                 Console.WriteLine("0- Back to Home");
 
                 Console.WriteLine("Enter Number");
@@ -710,6 +711,9 @@ namespace MiniBankSystemProject
                         break;
                     case 8:
                         ShowTop3RichestCustomers();
+                        break;
+                    case 9:
+                        ShowTotalBankBalance();
                         break;
 
                     case 0:
@@ -810,6 +814,7 @@ namespace MiniBankSystemProject
 
             Console.WriteLine("\nPress any key to return to menu...");
             Console.ReadKey();
+            Console.Clear();
         }
 
 
@@ -843,6 +848,7 @@ namespace MiniBankSystemProject
             Console.WriteLine("**************************************************************\n");
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
+            Console.Clear();
         }
 
 
@@ -878,15 +884,18 @@ namespace MiniBankSystemProject
 
             int newAccountNumber = userCordNumber + 1;
             userCordNumber = newAccountNumber;
-
+            //add to list 
             accountNumbers.Add(newAccountNumber);
             accountNames.Add(name);
             balances.Add(defaultBalances);
-
+            
             Console.WriteLine($"Account created for {name} with Account Number: {newAccountNumber}");
             Console.WriteLine($"Default balance of {defaultBalances} added.");
             SaveUserData();
-
+            Console.WriteLine("**************************************************************\n");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            Console.Clear();
         }
 
 
@@ -907,10 +916,11 @@ namespace MiniBankSystemProject
                 Console.ReadKey();
                 return;
             }
-
+            // user add national id
             Console.Write("\nEnter National ID: ");
             string nationalID = Console.ReadLine().Trim();
 
+            // check for national id in valid
             if (!validIDs.Contains(nationalID))
             {
                 Console.WriteLine("\nThis national ID is not registered in our system.");
@@ -956,6 +966,11 @@ namespace MiniBankSystemProject
 
             Console.WriteLine("\nPress any key to return to menu...");
             Console.ReadKey();
+
+            Console.WriteLine("**************************************************************\n");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            Console.Clear();
         }
 
 
@@ -1028,8 +1043,12 @@ namespace MiniBankSystemProject
                 Console.WriteLine("\nAccount deletion cancelled.");
             }
 
-            Console.WriteLine("\nPress any key to return to menu...");
+        
+
+            Console.WriteLine("**************************************************************\n");
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
+            Console.Clear();
         }
 
 
@@ -1133,6 +1152,7 @@ namespace MiniBankSystemProject
             Console.WriteLine($"New balance for account {destAccount}: {balances[destIndex]:C2}");
             Console.WriteLine("\nPress any key to return to menu...");
             Console.ReadKey();
+            Console.Clear();
         }
 
 
@@ -1162,6 +1182,7 @@ namespace MiniBankSystemProject
             Console.WriteLine("\n{0,-5} {1,-15} {2,-25} {3,15}", "Rank", "Account Number", "Customer Name", "Balance");
             Console.WriteLine(new string('-', 62));
 
+            // display top 3 
             for (int i = 0; i < sortedIndices.Count; i++)
             {
                 int index = sortedIndices[i];
@@ -1177,7 +1198,43 @@ namespace MiniBankSystemProject
 
             Console.WriteLine("\nPress any key to return to menu...");
             Console.ReadKey();
+            Console.Clear();
+
         }
+
+        //############################################## show total bank balance  #####################################################
+
+        public static void ShowTotalBankBalance()
+        {
+            Console.Clear();
+            Console.WriteLine("**************************************************************");
+            Console.WriteLine("                   TOTAL BANK BALANCE                         ");
+            Console.WriteLine("**************************************************************");
+
+            if (accountNumbers.Count == 0)
+            {
+                Console.WriteLine("\nNo accounts found in the system.");
+            }
+            else
+            {
+                double totalBalance = 0;
+
+                // Calculate sum of all balances
+                foreach (double balance in balances)
+                {
+                    totalBalance += balance;
+                }
+
+                Console.WriteLine($"\nTotal Accounts: {accountNumbers.Count}");
+                Console.WriteLine($"Total Bank Holdings: {totalBalance:C2}");
+
+                // Optional: Show breakdown by account type if you have different account types
+            }
+
+            Console.WriteLine("\nPress any key to return to menu...");
+            Console.ReadKey();
+        }
+
 
 
         // Load Reviews from the file
