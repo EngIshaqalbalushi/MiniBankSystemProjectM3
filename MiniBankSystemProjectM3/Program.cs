@@ -1182,7 +1182,7 @@ namespace MiniBankSystemProject
             Console.WriteLine("\n{0,-5} {1,-15} {2,-25} {3,15}", "Rank", "Account Number", "Customer Name", "Balance");
             Console.WriteLine(new string('-', 62));
 
-            // display top 3 
+            // display top 3 loop for all list than part balance hight to lowst
             for (int i = 0; i < sortedIndices.Count; i++)
             {
                 int index = sortedIndices[i];
