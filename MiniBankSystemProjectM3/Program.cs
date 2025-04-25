@@ -64,6 +64,18 @@ namespace MiniBankSystemProject
         static void Main(string[] args)
         {
             // display home page in main funaction
+            // load list of reviews
+            LoadReviews();
+            //load user data
+            LoadUserData();
+            // load transactions 
+            LoadTransactions();
+            // load account requests
+            LoadAccountRequest();
+            //load admin
+            LoadAdmi();
+
+           // display home page in main funaction
             HomePage();
         }
 
@@ -77,17 +89,7 @@ namespace MiniBankSystemProject
 
         public static void HomePage()
         {
-            // load list of reviews
-            LoadReviews();
-            //load user data
-            LoadUserData();
-            // load transactions 
-            LoadTransactions();
-            // load account requests
-            LoadAccountRequest();
-
-            //load admin
-            LoadAdmi();
+           
 
             Console.WriteLine("**************************************************************\n");
             Console.WriteLine("         Welcome To One Piece Bank System          \n ");
@@ -669,7 +671,8 @@ namespace MiniBankSystemProject
                 Console.WriteLine("4- Process Request");
                 Console.WriteLine("5- Search by National ID");
                 Console.WriteLine("6- Delete Account");
-                Console.WriteLine("7- Transfer Funds");  
+                Console.WriteLine("7- Transfer Funds");
+                Console.WriteLine("8- View Top 3 Richest Customers");  
                 Console.WriteLine("0- Back to Home");
 
                 Console.WriteLine("Enter Number");
@@ -704,6 +707,9 @@ namespace MiniBankSystemProject
                         break;
                     case 7:
                         TransferFunds();
+                        break;
+                    case 8:
+                        ShowTop3RichestCustomers();
                         break;
 
                     case 0:
@@ -759,6 +765,8 @@ namespace MiniBankSystemProject
 
         public static void ViewAllAccounts()
         {
+            LoadUserData();
+
             Console.Clear();
             Console.WriteLine("**************************************************************");
             Console.WriteLine("                      ALL ACCOUNTS SUMMARY                     ");
@@ -841,16 +849,21 @@ namespace MiniBankSystemProject
 
         //############################################## Process Next Account Request #####################################################
 
-        public static void ProcessNextAccountRequest()
+       public static void ProcessNextAccountRequest()
         {
+            //  Check if there are any pending account requests
+
             if (requestCreateAccountsInfo.Count == 0)
             {
                 Console.WriteLine("No pending account requests.");
                 return;
             }
+            //  Get and parse the next request in queue (FIFO processing)
 
             string request = requestCreateAccountsInfo.Dequeue();
             string[] parts = request.Split('|');
+
+            // validate request format contains both name and ID
 
             if (parts.Length < 2)
             {
@@ -861,17 +874,21 @@ namespace MiniBankSystemProject
             string name = parts[0];
             string nationalID = parts[1];
 
+            //  Generate new account number and update system records
+
             int newAccountNumber = userCordNumber + 1;
             userCordNumber = newAccountNumber;
 
             accountNumbers.Add(newAccountNumber);
-            accountNames.Add($"{name}|{nationalID}");
+            accountNames.Add(name);
             balances.Add(defaultBalances);
 
-            Console.WriteLine($"Account created for {name} (ID:{nationalID}) with Account Number: {newAccountNumber}");
+            Console.WriteLine($"Account created for {name} with Account Number: {newAccountNumber}");
+            Console.WriteLine($"Default balance of {defaultBalances} added.");
             SaveUserData();
-            SaveAccountRequest();  // Save the updated request queue
+
         }
+
 
         //############################################## Search By nationa ID #####################################################
 
@@ -1118,7 +1135,50 @@ namespace MiniBankSystemProject
             Console.ReadKey();
         }
 
-      
+
+        //############################################## show top three customers #####################################################
+
+        public static void ShowTop3RichestCustomers()
+        {
+            Console.Clear();
+            Console.WriteLine("**************************************************************");
+            Console.WriteLine("                  TOP 3 RICHEST CUSTOMERS                     ");
+            Console.WriteLine("**************************************************************");
+
+            if (accountNumbers.Count == 0)
+            {
+                Console.WriteLine("\nNo accounts found in the system.");
+                Console.WriteLine("\nPress any key to return to menu...");
+                Console.ReadKey();
+                return;
+            }
+
+            // Create a list of indices sorted by balance (descending)
+            var sortedIndices = Enumerable.Range(0, accountNumbers.Count)
+                .OrderByDescending(i => balances[i])
+                .Take(3)
+                .ToList();
+
+            Console.WriteLine("\n{0,-5} {1,-15} {2,-25} {3,15}", "Rank", "Account Number", "Customer Name", "Balance");
+            Console.WriteLine(new string('-', 62));
+
+            for (int i = 0; i < sortedIndices.Count; i++)
+            {
+                int index = sortedIndices[i];
+                string[] accountInfo = accountNames[index].Split('|');
+                string customerName = accountInfo.Length > 0 ? accountInfo[0] : "Unknown";
+
+                Console.WriteLine("{0,-5} {1,-15} {2,-25} {3,15:C2}",
+                    i + 1,
+                    accountNumbers[index],
+                    customerName,
+                    balances[index]);
+            }
+
+            Console.WriteLine("\nPress any key to return to menu...");
+            Console.ReadKey();
+        }
+
 
         // Load Reviews from the file
         static void LoadReviews()
@@ -1147,7 +1207,7 @@ namespace MiniBankSystemProject
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(userDataPath))
+                using (StreamWriter writer = new StreamWriter(userDataPath, append: true))
                 {
                     for (int i = 0; i < accountNumbers.Count; i++)
                     {
@@ -1160,7 +1220,8 @@ namespace MiniBankSystemProject
                 Console.WriteLine($"Error saving user data: {ex.Message}");
             }
         }
-        // load user data
+
+
         public static void LoadUserData()
         {
             try
@@ -1171,32 +1232,39 @@ namespace MiniBankSystemProject
                 accountNames.Clear();
                 balances.Clear();
 
+                int maxAccountNumber = 0; // Track the highest account number
+
                 using (StreamReader reader = new StreamReader(userDataPath))
                 {
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         string[] parts = line.Split('|');
-                        if (parts.Length == 3)
+                        if (parts.Length == 3 &&
+                            int.TryParse(parts[0], out int accNumber) &&
+                            double.TryParse(parts[2], out double balance))
                         {
-                            accountNumbers.Add(int.Parse(parts[0]));
+                            accountNumbers.Add(accNumber);
                             accountNames.Add(parts[1]);
-                            balances.Add(double.Parse(parts[2]));
+                            balances.Add(balance);
 
-                            // Update the account number counter
-                            if (int.Parse(parts[0]) > userCordNumber)
+                            // Track highest number to assign unique next account
+                            if (accNumber > maxAccountNumber)
                             {
-                                userCordNumber = int.Parse(parts[0]);
+                                maxAccountNumber = accNumber;
                             }
                         }
                     }
                 }
+
+                userCordNumber = maxAccountNumber; // Set it once after loading all
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading user data: {ex.Message}");
             }
         }
+
 
 
 
@@ -1279,20 +1347,24 @@ namespace MiniBankSystemProject
         {
             try
             {
-                if (!File.Exists(userDataPath)) return;
-                requestCreateAccountsInfo.Clear();
+                if (!File.Exists(pathAdmin)) return;  
+
+                adm.Clear();
                 using (StreamReader reader = new StreamReader(pathAdmin))
                 {
-                    int line;
-                    while ((line = int.Parse(reader.ReadLine())) != null)
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
                     {
-                        adm.Enqueue(line);
+                        if (int.TryParse(line, out int adminNumber))
+                        {
+                            adm.Enqueue(adminNumber);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading account requests: {ex.Message}");
+                Console.WriteLine($"Error loading admin accounts: {ex.Message}");
             }
         }
 
