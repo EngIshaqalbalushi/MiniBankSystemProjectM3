@@ -148,16 +148,13 @@ namespace MiniBankSystemProject
 
         // Login System for Users and admin
         public static void logeInSystem()
-
         {
-
             Console.Clear();
             Console.WriteLine("**************************************************************\n");
             Console.WriteLine("                          Login in Page                            \n ");
             Console.WriteLine("**************************************************************\n");
 
-
-            Console.Write("Enter Account Number :");
+            Console.Write("Enter Account Number: ");
             // Input validation 
             int number;
             while (!int.TryParse(Console.ReadLine(), out number))
@@ -165,35 +162,36 @@ namespace MiniBankSystemProject
                 Console.WriteLine("Invalid input. Please enter a number.");
             }
 
-            // check  account number for users and admin if found or not found 
-
+            // check account number for users and admin if found or not found 
             if (accountNumbers.Contains(number))
             {
                 // if found account number of user open user Interface
                 Console.WriteLine("Account found");
                 UserIU();
-                Console.WriteLine("");
-
-
             }
-            // if found account number of admin open admin Interface
-
             else if (adm.Contains(number))
             {
-                Console.WriteLine("Account  found.");
+                // if found account number of admin open admin Interface
+                Console.WriteLine("Account found.");
                 AdminIU();
             }
             else
             {
-                Console.WriteLine("Account not found.");
+                Console.WriteLine("\nAccount not found.");
+                Console.Write("Would you like to create a new account? (Y/N): ");
+                string response = Console.ReadLine().ToUpper();
 
-                requestCreateAccounts();
-
+                if (response == "Y")
+                {
+                    requestCreateAccounts();
+                }
+                else
+                {
+                    Console.WriteLine("\nReturning to main menu...");
+                    Console.WriteLine("\nPress any key to continue...");
+                    Console.ReadKey();
+                }
             }
-
-
-
-
         }
 
 
