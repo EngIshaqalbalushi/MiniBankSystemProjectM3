@@ -1245,6 +1245,7 @@ namespace MiniBankSystemProject
                 if (!File.Exists(pathFile)) return;
 
                 submittedReviews.Clear();
+                //used to read characters from a stream 
                 using (StreamReader reader = new StreamReader(pathFile))
                 {
                     string line;
@@ -1264,6 +1265,8 @@ namespace MiniBankSystemProject
         {
             try
             {
+                // used to write text data to a file 
+
                 using (StreamWriter writer = new StreamWriter(userDataPath, append: true))
                 {
                     for (int i = 0; i < accountNumbers.Count; i++)
@@ -1290,6 +1293,7 @@ namespace MiniBankSystemProject
                 balances.Clear();
 
                 int maxAccountNumber = 0; // Track the highest account number
+                 //used to read characters from a stream 
 
                 using (StreamReader reader = new StreamReader(userDataPath))
                 {
@@ -1333,6 +1337,7 @@ namespace MiniBankSystemProject
                 if (!File.Exists(transactionsFile)) return;
 
                 string[] lines = File.ReadAllLines(transactionsFile);
+                // loop to add transction info to list
                 foreach (string line in lines)
                 {
                     string[] parts = line.Split('|');
@@ -1358,7 +1363,9 @@ namespace MiniBankSystemProject
         public static void SaveAccountRequest()
         {
             try
-            {
+            {          
+                // used to write text data to a file 
+
                 using (StreamWriter writer = new StreamWriter(accountRequestsPath))  // Changed to accountRequestsPath
                 {
                     foreach (var request in requestCreateAccountsInfo)
@@ -1379,6 +1386,8 @@ namespace MiniBankSystemProject
             {
                 if (!File.Exists(accountRequestsPath)) return;  // Changed to accountRequestsPath
                 requestCreateAccountsInfo.Clear();
+                //used to read characters from a stream 
+
                 using (StreamReader reader = new StreamReader(accountRequestsPath))  // Changed to accountRequestsPath
                 {
                     string line;
@@ -1407,6 +1416,8 @@ namespace MiniBankSystemProject
                 if (!File.Exists(pathAdmin)) return;  
 
                 adm.Clear();
+                //used to read characters from a stream 
+
                 using (StreamReader reader = new StreamReader(pathAdmin))
                 {
                     string line;
@@ -1430,6 +1441,8 @@ namespace MiniBankSystemProject
         {
             try
             {
+                // used to write text data to a file 
+
                 using (StreamWriter writer = new StreamWriter(transactionsFile))
                 {
                     for (int i = 0; i < transactionAccountNumbers.Count; i++)
@@ -1449,6 +1462,7 @@ namespace MiniBankSystemProject
         {
             try
             {
+                // used to write text data to a file 
                 using (StreamWriter writer = new StreamWriter(pathFile))
                 {
                     foreach (var review in submittedReviews)
